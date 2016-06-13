@@ -8,12 +8,10 @@ Wouldn't it be great if there were some way to convert the MySQL dump format (wh
 
 Well, now there is.
 
-This short Python script takes advantage of the fact that the structure of a MySQL INSERT statement is not too different from CSV, and uses the Python CSV parser (before and after some text wrangling) to turn the MySQL dump file into a CSV file.
+This short Python script takes advantage of the fact that the structure of a MySQL INSERT statement is not too different from CSV, and uses the Python CSV parser (before and after some text wrangling) to turn the MySQL dump file into multiple CSV files where each CSV represents a table.
 
 ## Usage
-Just run `python mysqldump_to_csv.py` followed by the filename of an SQL file. You can specify multiple SQL files, and they will all be concatenated into one CSV file. This script can also take in SQL files from standard input, which can be useful for turning a gzipped MySQL dump into a CSV file without uncompressing the MySQL dump.
-
-`zcat dumpfile.sql.gz | python mysqldump_to_csv.py`
+Just run `python mysqldump_to_csv.py` followed by the filename of an SQL file. A CSV file will then be created and named after each table in the dump file.
 
 ## How It Works
 The following SQL:

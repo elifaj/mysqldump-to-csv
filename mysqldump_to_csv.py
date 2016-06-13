@@ -47,6 +47,8 @@ def parse_values(values, outfile):
     )
 
     writer = csv.writer(outfile, quoting=csv.QUOTE_MINIMAL)
+#    writer = csv.writer(outfile, delimiter=',', doublequote=False,
+#    escapechar='\\', quotechar="'", strict=True, quoting=csv.QUOTE_MINIMAL)
     for reader_row in reader:
         for column in reader_row:
             # If our current string is empty...
@@ -89,6 +91,33 @@ def parse_values(values, outfile):
             latest_row[-1] = latest_row[-1][:-2]
             writer.writerow(latest_row)
 
+def get_header_dict(inputfile):
+	colMode = False
+	colList = []
+	table = ''
+	headerDict = {}
+	for line in inputfile:
+		line = line.lstrip()
+		line = line.strip('\n')
+		if not colMode:
+			if line.startswith('CREATE TABLE'):
+				split = line.split(' ')
+				table = split[2][1:-1]
+				colMode = True
+		else:
+			if line.startswith('`'):
+				split = line.split(' ')
+				col = split[0][1:-1]
+				colList.append(col)
+			else:
+				headerDict[table] = ','.join(colList)
+				colMode = False
+				colList = []
+
+	inputfile.seek(0)
+	return headerDict
+
+
 
 def main():
     """
@@ -98,14 +127,21 @@ def main():
     # listed in sys.argv[1:]
     # or stdin if no args given.
     try:
-        for line in fileinput.input():
+        inputfile = open(sys.argv[1], 'rb')
+        headerDict = get_header_dict(inputfile)
+        for line in inputfile:
             # Look for an INSERT statement and parse it.
             if is_insert(line):
+                split = line.split(' ')
+                table = split[2][1:-1]
+                print 'Processing ' + table
+                outputcsv = open(table+'.csv', 'ab')
+                outputcsv.write(headerDict[table] + '\n')
                 values = get_values(line)
                 if values_sanity_check(values):
-                    parse_values(values, sys.stdout)
+                    parse_values(values, outputcsv)
     except KeyboardInterrupt:
-        sys.exit(0)
+            sys.exit(0)
 
 if __name__ == "__main__":
     main()
