@@ -11,7 +11,7 @@ Well, now there is.
 This short Python script takes advantage of the fact that the structure of a MySQL INSERT statement is not too different from CSV, and uses the Python CSV parser (before and after some text wrangling) to turn the MySQL dump file into multiple CSV files where each CSV represents a table.
 
 ## Usage
-Just run `python mysqldump_to_csv.py` followed by the filename of an SQL file. A CSV file will then be created and named after each table in the dump file.
+Just run `python mysqldump_to_csv.py` followed by the filename of an SQL file. CSV files will then be created and named after each table in the dump file.
 
 ## How It Works
 The following SQL:
